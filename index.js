@@ -29,7 +29,7 @@ app.get("/", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(notes);
+  response.json(data);
 });
 
 app.get("/info", (request, response) => {
@@ -41,6 +41,12 @@ app.get("/info", (request, response) => {
       ${new Date().toString()}
       </p>`,
   );
+});
+
+app.get("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id) ;
+  const person = data.find((p) => p.id === id);
+  response.json(person);
 });
 
 const PORT = 3001;
