@@ -30,6 +30,9 @@ let data = [
     "number": "39-23-6423122",
   },
 ];
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
 
 app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
@@ -56,7 +59,7 @@ app.get("/api/persons/:id", (request, response) => {
   if (person) {
     response.json(person);
   }
-  response.status(404).end();
+  response.status(404).send({error: "not found"});
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -89,6 +92,7 @@ app.post("/api/persons", (request, response) => {
   response.json(person);
 });
 
+app.use(unknownEndpoint)
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
