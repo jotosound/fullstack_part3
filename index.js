@@ -44,12 +44,19 @@ app.get("/info", (request, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id) ;
+  const id = Number(request.params.id);
   const person = data.find((p) => p.id === id);
   if (person) {
-    response.json(person)
+    response.json(person);
   }
   response.status(404).end();
+});
+
+app.delete("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
+  data = data.filter((person) => person.id !== id);
+
+  response.status(204).end();
 });
 
 const PORT = 3001;
