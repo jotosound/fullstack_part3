@@ -58,21 +58,25 @@ app.get("/info", (request, response) => {
   );
 });
 
-app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = data.find((p) => p.id === id);
-  if (person) {
-    response.json(person);
-  }
-  response.status(404).send({ error: "not found" });
-});
-
-app.delete("/api/persons/:id", (request, response) => {
-  Person.findByIdAndDelete(request.params.id)
-    .then(result => {
-      response.status(204).end();
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((result) => {
+      if (result) {
+        response.json(result);
+      } else {
+        response.status(404).send({ error: "not found" });
+      }
     })
     .catch(error => next(error))
+
+});
+
+app.delete("/api/persons/:id", (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 // const generateId = () => {
 //   const min = 0;
@@ -80,7 +84,7 @@ app.delete("/api/persons/:id", (request, response) => {
 //   return Math.floor(Math.random() * (max - min + 1) + min);
 // };
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const person = request.body;
   if (!person.name || !person.number) {
     return response.status(400).json({
@@ -93,7 +97,22 @@ app.post("/api/persons", (request, response) => {
   });
   newPerson.save().then((savedPerson) => {
     response.json(savedPerson);
-  });
+  })
+  .catch(error => next(error))
+});
+
+app.put("/api/persons/:id", (request, response) => {
+  const person = request.body;
+  const updatedPerson = {
+    name: person.name,
+    number: person.number,
+  };
+
+  Person.findByIdAndUpdate(request.params.id, updatedPerson, { new: true })
+    .then((result) => {
+      response.json(result);
+    })
+    .catch((error) => next(error));
 });
 
 const unknownEndpoint = (request, response) => {
