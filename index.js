@@ -89,15 +89,13 @@ app.post("/api/persons", (request, response) => {
       error: "Missing name or number",
     });
   }
-  if (data.find((p) => p.name.toLowerCase() === person.name.toLowerCase())) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
-  }
-  person.id = generateId();
-  data = data.concat(person);
-
-  response.json(person);
+  const newPerson = new Person({
+    name: person.name,
+    number: person.number
+  })
+  newPerson.save().then(savedPerson => {
+    response.json(savedPerson);
+  })
 });
 
 app.use(unknownEndpoint);
