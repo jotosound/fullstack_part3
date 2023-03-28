@@ -48,14 +48,17 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  response.send(
-    `<p>Phonebook has info for ${data.length} ${
-      data.length > 1 ? "people" : "person"
-    }.</p>      
+  Person.find({}).then((result) => {
+    console.log("result:", result.length);
+    response.send(
+      `<p>Phonebook has info for ${result.length} ${
+        result.length > 1 ? "people" : "person"
+      }.</p>      
       <p>
       ${new Date().toString()}
       </p>`,
-  );
+    );
+  });
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -67,8 +70,7 @@ app.get("/api/persons/:id", (request, response, next) => {
         response.status(404).send({ error: "not found" });
       }
     })
-    .catch(error => next(error))
-
+    .catch((error) => next(error));
 });
 
 app.delete("/api/persons/:id", (request, response, next) => {
@@ -98,7 +100,7 @@ app.post("/api/persons", (request, response, next) => {
   newPerson.save().then((savedPerson) => {
     response.json(savedPerson);
   })
-  .catch(error => next(error))
+    .catch((error) => next(error));
 });
 
 app.put("/api/persons/:id", (request, response) => {
