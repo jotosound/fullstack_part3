@@ -1,11 +1,12 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
-const cors = require('cors')
-
+const cors = require("cors");
+const Person = require("./models/people");
 const app = express();
-app.use(cors())
+app.use(cors());
 app.use(express.json());
-app.use(express.static('build'))
+app.use(express.static("build"));
 morgan.token("body", function (req, res) {
   return JSON.stringify(req.body);
 });
@@ -36,15 +37,17 @@ let data = [
   },
 ];
 const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' })
-}
+  response.status(404).send({ error: "unknown endpoint" });
+};
 
 app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(data);
+  Person.find({}).then((people) => {
+    response.json(people);
+  });
 });
 
 app.get("/info", (request, response) => {
@@ -64,7 +67,7 @@ app.get("/api/persons/:id", (request, response) => {
   if (person) {
     response.json(person);
   }
-  response.status(404).send({error: "not found"});
+  response.status(404).send({ error: "not found" });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -97,8 +100,8 @@ app.post("/api/persons", (request, response) => {
   response.json(person);
 });
 
-app.use(unknownEndpoint)
-const PORT = process.env.PORT || 3001;
+app.use(unknownEndpoint);
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
